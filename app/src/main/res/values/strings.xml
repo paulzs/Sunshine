@@ -21,4 +21,6 @@
     <string name="pref_units_metric">Metric</string>
     <string name="pref_units_imperial">Imperial</string>
 
+    <string name="action_map">Map Location</string>
+
 </resources>
