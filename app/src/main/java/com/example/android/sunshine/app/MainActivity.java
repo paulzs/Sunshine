@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intent);
         }
         else {
-            Log.d(LOG_TAG, "Could not call " + location);
+            Log.d(LOG_TAG, "Could not call " + location ", there is no map app!");
         }
     }
 
