@@ -23,7 +23,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Create a tale to hold locations.
 
-        final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE" + LocationEntry.TABLE_NAME + "(" +
+        final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + "(" +
                 LocationEntry._ID + " INTEGER PRIMARY KEY," +
                 LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
                 LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
@@ -32,7 +32,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
                 "UNIQUE (" + LocationEntry.COLUMN_LOCATION_SETTING +" ) ON CONFLICT IGNORE" +
                 " );";
 
-        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE" +
+        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " +
                 WeatherContract.WeatherEntry.TABLE_NAME + "(" +
                 WeatherEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
