@@ -7,6 +7,7 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.example.android.sunshine.app.data.WeatherContract.LocationEntry;
+import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 import com.example.android.sunshine.app.data.WeatherDbHelper;
 
 /**
@@ -88,8 +89,6 @@ public class TestDb extends AndroidTestCase{
             fail("No values returned. Womp Womp :(");
         }
 
-        /*
-
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationRowId);
         weatherValues.put(WeatherEntry.COLUMN_DATETEXT, "20141205");
@@ -102,9 +101,31 @@ public class TestDb extends AndroidTestCase{
         weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, 5.5);
         weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, 321);
 
-        dbHelper.close();
+        long weatherRowId;
+        weatherRowId = sqLiteDb.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
+        assertTrue(weatherRowId != -1);
 
-        */
+        Cursor weatherCursor = sqLiteDb.query(
+                WeatherEntry.TABLE_NAME, //Table to Query
+                null, //null just returns all the columns
+                null, //Columns for the "where" clause
+                null, //Values for the "where" clause
+                null, //columns to group by
+                null, //columns to filter by row groups
+                null //sort order
+        );
+
+        if (cursor.moveToFirst()) {
+            //Get value in each column by finding column index
+            int dateIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DATETEXT);
+            String date = weatherCursor.getString(dateIndex);
+
+        }
+        else {
+            fail("No weather data returned. Womp Womp :(");
+        }
+
+        dbHelper.close();
 
     }
 
