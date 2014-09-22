@@ -7,7 +7,6 @@ import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.example.android.sunshine.app.data.WeatherContract.LocationEntry;
-import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 import com.example.android.sunshine.app.data.WeatherDbHelper;
 
 /**
@@ -74,10 +73,10 @@ public class TestDb extends AndroidTestCase{
             String name = cursor.getString(nameIndex);
 
             int latIndex = cursor.getColumnIndex(LocationEntry.COLUMN_COORD_LAT);
-            String latitude = cursor.getString(latIndex);
+            double latitude = cursor.getDouble(latIndex);
 
             int longIndex = cursor.getColumnIndex(LocationEntry.COLUMN_COORD_LONG);
-            String longitude = cursor.getString(longIndex);
+            double longitude = cursor.getDouble(longIndex);
 
             assertEquals(testName, name);
             assertEquals(testLocationSetting, location);
@@ -88,6 +87,8 @@ public class TestDb extends AndroidTestCase{
         else {
             fail("No values returned. Womp Womp :(");
         }
+
+        /*
 
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationRowId);
@@ -102,6 +103,8 @@ public class TestDb extends AndroidTestCase{
         weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, 321);
 
         dbHelper.close();
+
+        */
 
     }
 
