@@ -89,6 +89,16 @@ public class TestDb extends AndroidTestCase{
             fail("No values returned. Womp Womp :(");
         }
 
+        String testDate = "20141205";
+        double testDegrees = 1.1;
+        double testHumidity = 1.2;
+        double testPressure = 1.3;
+        double testMaxTemp = 75;
+        double testMinTemp = 65;
+        String testShortDesc = "Asteroids";
+        double testWind = 5.5;
+        double testWeatherId = 321;
+
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationRowId);
         weatherValues.put(WeatherEntry.COLUMN_DATETEXT, "20141205");
@@ -119,6 +129,40 @@ public class TestDb extends AndroidTestCase{
             //Get value in each column by finding column index
             int dateIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DATETEXT);
             String date = weatherCursor.getString(dateIndex);
+
+            int degreesIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DEGREES);
+            double degrees = weatherCursor.getDouble(degreesIndex);
+
+            int humidityIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_HUMIDITY);
+            double humidity = weatherCursor.getDouble(humidityIndex);
+
+            int pressureIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_PRESSURE);
+            double pressure = weatherCursor.getDouble(pressureIndex);
+
+            int maxIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_MAX_TEMP);
+            double max = weatherCursor.getDouble(maxIndex);
+
+            int minIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_MIN_TEMP);
+            double min = weatherCursor.getDouble(minIndex);
+
+            int shortDescIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_SHORT_DESC);
+            String shortDesc = weatherCursor.getString(shortDescIndex);
+
+            int windIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_WIND_SPEED);
+            double wind = weatherCursor.getDouble(windIndex);
+
+            int weatherIdIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID);
+            double weatherId = weatherCursor.getDouble(weatherIdIndex);
+
+            assertEquals(testDate, date);
+            assertEquals(testDegrees, degrees);
+            assertEquals(testHumidity, humidity);
+            assertEquals(testPressure, pressure);
+            assertEquals(testMaxTemp, max);
+            assertEquals(testMinTemp, min);
+            assertEquals(testShortDesc, shortDesc);
+            assertEquals(testWind, wind);
+            assertEquals(testWeatherId, weatherId);
 
         }
         else {
