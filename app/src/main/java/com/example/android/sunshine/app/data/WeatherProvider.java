@@ -17,17 +17,17 @@ public class WeatherProvider extends ContentProvider{
     private static final int LOCATION = 300;
     private static final int LOCATION_ID = 301;
 
-    private static final UriMatcher wUriMatcher = buildUriMatcher();
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
     private WeatherDbHelper mOpenHelper;
 
     private static UriMatcher buildUriMatcher() {
-        final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER", WEATHER);
-        sUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*", WEATHER_WITH_LOCATION);
-        sUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*/*", WEATHER_WITH_LOCATION_AND_DATE);
-        sUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION", LOCATION);
-        sUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION/#", LOCATION_ID);
-        return sUriMatcher;
+        final UriMatcher aUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER", WEATHER);
+        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*", WEATHER_WITH_LOCATION);
+        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*/*", WEATHER_WITH_LOCATION_AND_DATE);
+        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION", LOCATION);
+        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION/#", LOCATION_ID);
+        return aUriMatcher;
     }
 
     @Override
@@ -43,7 +43,17 @@ public class WeatherProvider extends ContentProvider{
 
     @Override
     public String getType(Uri uri) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case  WEATHER_WITH_LOCATION_AND_DATE:
+                return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
+            case WEATHER_WITH_LOCATION:
+                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+            case WEATHER:
+                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown Uri: " + uri);
+        }
     }
 
     @Override

@@ -206,4 +206,12 @@ public class TestProvider extends AndroidTestCase{
         valueCursor.close();
     }
 
+    public void testGetType(){
+        String type = mContext.getContentResolver().getType(WeatherEntry.CONTENT_URI);
+        assertEquals(WeatherEntry.CONTENT_TYPE, type);
+
+        String testLocation = "94074";
+        type = mContext.getContentResolver().getType(WeatherEntry.buildWeatherLocation(testLocation));
+    }
+
 }
