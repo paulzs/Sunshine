@@ -117,7 +117,7 @@ public class TestDb extends AndroidTestCase{
 
         Cursor weatherCursor = sqLiteDb.query(
                 WeatherEntry.TABLE_NAME, //Table to Query
-                null, //null just returns all the columns
+                null,
                 null, //Columns for the "where" clause
                 null, //Values for the "where" clause
                 null, //columns to group by
@@ -125,7 +125,9 @@ public class TestDb extends AndroidTestCase{
                 null //sort order
         );
 
-        if (cursor.moveToFirst()) {
+        System.out.println(weatherCursor);
+
+        if (weatherCursor.moveToFirst()) {
             //Get value in each column by finding column index
             int dateIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DATETEXT);
             String date = weatherCursor.getString(dateIndex);
@@ -168,9 +170,7 @@ public class TestDb extends AndroidTestCase{
         else {
             fail("No weather data returned. Womp Womp :(");
         }
-
         dbHelper.close();
-
     }
 
 }
