@@ -212,6 +212,17 @@ public class TestProvider extends AndroidTestCase{
 
         String testLocation = "94074";
         type = mContext.getContentResolver().getType(WeatherEntry.buildWeatherLocation(testLocation));
+        assertEquals(WeatherEntry.CONTENT_TYPE,type);
+
+        String testDate = "20140612";
+        type = mContext.getContentResolver().getType(WeatherEntry.buildWeatherLocationWithDate(testLocation,testDate));
+        assertEquals(WeatherEntry.CONTENT_ITEM_TYPE, type);
+
+        type = mContext.getContentResolver().getType(LocationEntry.CONTENT_URI);
+        assertEquals(LocationEntry.CONTENT_TYPE, type);
+
+        type = mContext.getContentResolver().getType(LocationEntry.buildLocationUri(1L));
+        assertEquals(LocationEntry.CONTENT_ITEM_TYPE, type);
     }
 
 }
