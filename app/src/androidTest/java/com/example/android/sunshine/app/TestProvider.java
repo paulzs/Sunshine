@@ -27,7 +27,7 @@ public class TestProvider extends AndroidTestCase{
 
     //Set dummy values for location
 
-    ContentValues getLocationContentValues(){
+    /*ContentValues getLocationContentValues(){
 
         String testLocationSetting = "99705";
         double testLatitude = 64.772;
@@ -68,7 +68,7 @@ public class TestProvider extends AndroidTestCase{
 
         return weatherValues;
 
-    }
+    }*/
 
     public void testInsertReadDb() {
         //Test data
@@ -208,7 +208,7 @@ public class TestProvider extends AndroidTestCase{
 
     public void testGetType(){
         String type = mContext.getContentResolver().getType(WeatherEntry.CONTENT_URI);
-        assertEquals(WeatherEntry.CONTENT_TYPE, type);
+        assertEquals(WeatherEntry.CONTENT_TYPE,type);
 
         String testLocation = "94074";
         type = mContext.getContentResolver().getType(WeatherEntry.buildWeatherLocation(testLocation));
