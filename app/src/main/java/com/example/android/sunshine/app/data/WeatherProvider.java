@@ -21,13 +21,17 @@ public class WeatherProvider extends ContentProvider{
     private WeatherDbHelper mOpenHelper;
 
     private static UriMatcher buildUriMatcher() {
-        final UriMatcher aUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER", WEATHER);
-        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*", WEATHER_WITH_LOCATION);
-        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","WEATHER/*/*", WEATHER_WITH_LOCATION_AND_DATE);
-        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION", LOCATION);
-        aUriMatcher.addURI("CONTENT://COM.EXAMPLE.ANDROID.SUNSHINE.APP/","LOCATION/#", LOCATION_ID);
-        return aUriMatcher;
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String authority = WeatherContract.CONTENT_AUTHORITY;
+
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/*", WEATHER_WITH_LOCATION_AND_DATE);
+
+        matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
+        matcher.addURI(authority, WeatherContract.PATH_LOCATION + "/#", LOCATION_ID);
+
+        return matcher;
     }
 
     @Override
