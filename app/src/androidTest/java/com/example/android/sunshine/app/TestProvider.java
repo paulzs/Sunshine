@@ -79,7 +79,7 @@ public class TestProvider extends AndroidTestCase{
         SQLiteDatabase sqLiteDb = dbHelper.getWritableDatabase();
         assertEquals(true, sqLiteDb.isOpen());
 
-        ContentValues values = getLocationContentValues();
+        ContentValues values = TestDb.createNorthPoleLocationValues();
 
         long locationRowId;
         locationRowId = sqLiteDb.insert(LocationEntry.TABLE_NAME, null, values);
@@ -124,7 +124,7 @@ public class TestProvider extends AndroidTestCase{
             fail("No values returned. Womp Womp :(");
         }
 
-        ContentValues weatherValues = getWeatherContentValues(locationRowId);
+        ContentValues weatherValues = TestDb.createNorthPoleLocationValues();
 
         long weatherRowId;
         weatherRowId = sqLiteDb.insert(WeatherEntry.TABLE_NAME, null, weatherValues);

@@ -194,6 +194,17 @@ public class TestDb extends AndroidTestCase{
         dbHelper.close();
     }
 
+    static ContentValues createNorthPoleLocationValues() {
+        // Create a new map of values, where column names are the keys
+        ContentValues testValues = new ContentValues();
+        testValues.put(LocationEntry.COLUMN_LOCATION_SETTING, "99705");
+        testValues.put(LocationEntry.COLUMN_CITY_NAME, "North Pole");
+        testValues.put(LocationEntry.COLUMN_COORD_LAT, 64.7488);
+        testValues.put(LocationEntry.COLUMN_COORD_LONG, -147.353);
+
+        return testValues;
+    }
+
     static void validateCursor(ContentValues expectedValues, Cursor valueCursor) {
 
         assertTrue(valueCursor.moveToFirst());
