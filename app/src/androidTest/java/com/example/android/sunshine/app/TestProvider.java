@@ -20,6 +20,8 @@ public class TestProvider extends AndroidTestCase{
 
     public static final String LOG_TAG = TestProvider.class.getSimpleName();
     String TEST_CITY = "North Pole";
+    String TEST_LOCATION = "99705";
+    String TEST_DATE = "20141205";
 
     public void testDeleteDb() throws Throwable {
         mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
@@ -38,7 +40,7 @@ public class TestProvider extends AndroidTestCase{
         return testValues;
     }
 
-    public void testInsertReadDb() {
+    public void testInsertReadProvider() {
         //Test data
 
         //Make DB for testing
@@ -55,89 +57,42 @@ public class TestProvider extends AndroidTestCase{
         assertTrue(locationRowId != -1);
         Log.d(LOG_TAG, "New row id: " + locationRowId);
 
-        Cursor cursor = sqLiteDb.query(
-                LocationEntry.TABLE_NAME, //Table to Query
-                null, //Just get all columns
-                null, //Columns for the "where" clause
-                null, //Values for the "where" clause
-                null, //columns to group by
-                null, //columns to filter by row groups
-                null //sort order
-        );
-
-        if (cursor.moveToFirst()) {
-
-            validateCursor(values, cursor);
-
-        }
-        else {
-            fail("No values returned. Womp Womp :(");
-        }
-
         ContentValues weatherValues = TestDb.createWeatherValues(locationRowId);
 
         long weatherRowId = sqLiteDb.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
         assertTrue(weatherRowId != -1);
 
-        Cursor weatherCursor = sqLiteDb.query(
-                WeatherEntry.TABLE_NAME, //Table to Query
-                null,
-                null, //Columns for the "where" clause
-                null, //Values for the "where" clause
-                null, //columns to group by
-                null, //columns to filter by row groups
-                null //sort order
+        Cursor weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.CONTENT_URI,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null // columns to group by
         );
 
         validateCursor(weatherValues,weatherCursor);
 
-        /*if (weatherCursor.moveToFirst()) {
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                LocationEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
 
-            validateCursor(weatherValues, weatherCursor);
+        validateCursor(values, cursor);
 
-            Get value in each column by finding column index
-            int dateIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DATETEXT);
-            String date = weatherCursor.getString(dateIndex);
+        // Now see if we can successfully query if we include the row id
+        cursor = mContext.getContentResolver().query(
+                LocationEntry.buildLocationUri(locationRowId),
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
 
-            int degreesIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_DEGREES);
-            double degrees = weatherCursor.getDouble(degreesIndex);
-
-            int humidityIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_HUMIDITY);
-            double humidity = weatherCursor.getDouble(humidityIndex);
-
-            int pressureIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_PRESSURE);
-            double pressure = weatherCursor.getDouble(pressureIndex);
-
-            int maxIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_MAX_TEMP);
-            double max = weatherCursor.getDouble(maxIndex);
-
-            int minIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_MIN_TEMP);
-            double min = weatherCursor.getDouble(minIndex);
-
-            int shortDescIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_SHORT_DESC);
-            String shortDesc = weatherCursor.getString(shortDescIndex);
-
-            int windIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_WIND_SPEED);
-            double wind = weatherCursor.getDouble(windIndex);
-
-            int weatherIdIndex = weatherCursor.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID);
-            double weatherId = weatherCursor.getDouble(weatherIdIndex);
-
-            assertEquals(testDate, date);
-            assertEquals(testDegrees, degrees);
-            assertEquals(testHumidity, humidity);
-            assertEquals(testPressure, pressure);
-            assertEquals(testMaxTemp, max);
-            assertEquals(testMinTemp, min);
-            assertEquals(testShortDesc, shortDesc);
-            assertEquals(testWind, wind);
-            assertEquals(testWeatherId, weatherId);
-
-        }
-        else {
-            fail("No weather data returned. Womp Womp :(");
-        }
-        dbHelper.close();*/
+        validateCursor(values, cursor);
     }
 
     static void validateCursor(ContentValues expectedValues, Cursor valueCursor) {
