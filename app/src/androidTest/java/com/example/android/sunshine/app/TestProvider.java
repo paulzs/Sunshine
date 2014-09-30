@@ -1,8 +1,10 @@
 package com.example.android.sunshine.app;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -62,7 +64,7 @@ public class TestProvider extends AndroidTestCase{
         long weatherRowId = sqLiteDb.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
         assertTrue(weatherRowId != -1);
 
-        Cursor weatherCursor = mContext.getContentResolver().query(
+        /*Cursor weatherCursor = mContext.getContentResolver().query(
                 WeatherEntry.CONTENT_URI,  // Table to Query
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
@@ -70,10 +72,34 @@ public class TestProvider extends AndroidTestCase{
                 null // columns to group by
         );
 
-        validateCursor(weatherValues,weatherCursor);
+        validateCursor(weatherValues,weatherCursor);*/
+
+        // Add the location values in with the weather data so that we can make
+        // sure that the join worked and we actually get all the values back
+        addAllContentValues(weatherValues, values);
+        // Get the joined Weather and Location data
+        Cursor weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.buildWeatherLocation(TEST_LOCATION),
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+        TestDb.validateCursor(weatherValues, weatherCursor);
+
+        // Get the joined Weather and Location data with a start date
+        weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.buildWeatherLocationWithStartDate(
+                        TEST_LOCATION, TEST_DATE),
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+        TestDb.validateCursor(weatherValues, weatherCursor);
 
         // A cursor is your primary interface to the query results.
-        Cursor cursor = mContext.getContentResolver().query(
+        /*Cursor cursor = mContext.getContentResolver().query(
                 LocationEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
@@ -92,7 +118,9 @@ public class TestProvider extends AndroidTestCase{
                 null  // sort order
         );
 
-        validateCursor(values, cursor);
+        validateCursor(values, cursor);*/
+
+        sqLiteDb.close();
     }
 
     static void validateCursor(ContentValues expectedValues, Cursor valueCursor) {
@@ -108,6 +136,7 @@ public class TestProvider extends AndroidTestCase{
             assertEquals(expectedValue, valueCursor.getString(idx));
         }
         valueCursor.close();
+
     }
 
     public void testGetType(){
@@ -129,4 +158,10 @@ public class TestProvider extends AndroidTestCase{
         assertEquals(LocationEntry.CONTENT_ITEM_TYPE, type);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    void addAllContentValues(ContentValues destination, ContentValues source) {
+        for (String key : source.keySet()) {
+            destination.put(key, source.getAsString(key));
+        }
+    }
 }
