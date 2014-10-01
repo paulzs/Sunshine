@@ -86,6 +86,7 @@ public class TestProvider extends AndroidTestCase{
                 null  // sort order
         );
         TestDb.validateCursor(weatherValues, weatherCursor);
+        weatherCursor.close();
 
         // Get the joined Weather and Location data with a start date
         weatherCursor = mContext.getContentResolver().query(
@@ -97,6 +98,8 @@ public class TestProvider extends AndroidTestCase{
                 null  // sort order
         );
         TestDb.validateCursor(weatherValues, weatherCursor);
+
+        weatherCursor.close();
 
         // A cursor is your primary interface to the query results.
         /*Cursor cursor = mContext.getContentResolver().query(
@@ -119,6 +122,15 @@ public class TestProvider extends AndroidTestCase{
         );
 
         validateCursor(values, cursor);*/
+
+        weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.buildWeatherLocationWithDate(TEST_LOCATION, TEST_DATE),
+                null,
+                null,
+                null,
+                null
+        );
+        validateCursor(weatherValues, weatherCursor);
 
         sqLiteDb.close();
     }
