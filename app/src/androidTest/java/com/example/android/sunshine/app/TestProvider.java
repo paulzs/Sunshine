@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
@@ -61,8 +63,10 @@ public class TestProvider extends AndroidTestCase{
 
         ContentValues weatherValues = TestDb.createWeatherValues(locationRowId);
 
-        long weatherRowId = sqLiteDb.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
-        assertTrue(weatherRowId != -1);
+        Uri weatherInsertUri = mContext.getContentResolver()
+                .insert(WeatherEntry.CONTENT_URI, weatherValues);
+        long weatherRowId = ContentUris.parseId(weatherInsertUri);
+        assertTrue(weatherInsertUri != null);
 
         /*Cursor weatherCursor = mContext.getContentResolver().query(
                 WeatherEntry.CONTENT_URI,  // Table to Query
