@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.test.AndroidTestCase;
@@ -27,10 +26,6 @@ public class TestProvider extends AndroidTestCase{
     String TEST_LOCATION = "99705";
     String TEST_DATE = "20141205";
 
-    public void testDeleteDb() throws Throwable {
-        mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
-    }
-
     //Set dummy values for location
 
     static ContentValues createNorthPoleLocationValues() {
@@ -44,39 +39,43 @@ public class TestProvider extends AndroidTestCase{
         return testValues;
     }
 
+    static ContentValues createWeatherValues(long locationRowId) {
+        ContentValues weatherValues = new ContentValues();
+        weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+        weatherValues.put(WeatherEntry.COLUMN_DATETEXT, "20141205");
+        weatherValues.put(WeatherEntry.COLUMN_DEGREES, 1.1);
+        weatherValues.put(WeatherEntry.COLUMN_HUMIDITY, 1.2);
+        weatherValues.put(WeatherEntry.COLUMN_PRESSURE, 1.3);
+        weatherValues.put(WeatherEntry.COLUMN_MAX_TEMP, 75);
+        weatherValues.put(WeatherEntry.COLUMN_MIN_TEMP, 65);
+        weatherValues.put(WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+        weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, 5.5);
+        weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, 321);
+
+        return weatherValues;
+    }
+
+    public void testDeleteDb() throws Throwable {
+        mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
+    }
+
     public void testInsertReadProvider() {
         //Test data
 
-        //Make DB for testing
-        WeatherDbHelper dbHelper =
-                new WeatherDbHelper(mContext);
-        SQLiteDatabase sqLiteDb = dbHelper.getWritableDatabase();
-        assertEquals(true, sqLiteDb.isOpen());
-
         ContentValues values = createNorthPoleLocationValues();
 
-        long locationRowId;
-        locationRowId = sqLiteDb.insert(LocationEntry.TABLE_NAME, null, values);
+        Uri locationUri = mContext.getContentResolver()
+                .insert(LocationEntry.CONTENT_URI, values);
+        long locationRowId = ContentUris.parseId(locationUri);
 
-        assertTrue(locationRowId != -1);
         Log.d(LOG_TAG, "New row id: " + locationRowId);
 
-        ContentValues weatherValues = TestDb.createWeatherValues(locationRowId);
+        ContentValues weatherValues = createWeatherValues(locationRowId);
 
         Uri weatherInsertUri = mContext.getContentResolver()
                 .insert(WeatherEntry.CONTENT_URI, weatherValues);
         long weatherRowId = ContentUris.parseId(weatherInsertUri);
         assertTrue(weatherInsertUri != null);
-
-        /*Cursor weatherCursor = mContext.getContentResolver().query(
-                WeatherEntry.CONTENT_URI,  // Table to Query
-                null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                null // columns to group by
-        );
-
-        validateCursor(weatherValues,weatherCursor);*/
 
         // Add the location values in with the weather data so that we can make
         // sure that the join worked and we actually get all the values back
@@ -89,7 +88,7 @@ public class TestProvider extends AndroidTestCase{
                 null, // values for "where" clause
                 null  // sort order
         );
-        TestDb.validateCursor(weatherValues, weatherCursor);
+        validateCursor(weatherValues, weatherCursor);
         weatherCursor.close();
 
         // Get the joined Weather and Location data with a start date
@@ -101,7 +100,7 @@ public class TestProvider extends AndroidTestCase{
                 null, // values for "where" clause
                 null  // sort order
         );
-        TestDb.validateCursor(weatherValues, weatherCursor);
+        validateCursor(weatherValues, weatherCursor);
 
         weatherCursor.close();
 
@@ -135,8 +134,6 @@ public class TestProvider extends AndroidTestCase{
                 null
         );
         validateCursor(weatherValues, weatherCursor);
-
-        sqLiteDb.close();
     }
 
     static void validateCursor(ContentValues expectedValues, Cursor valueCursor) {
