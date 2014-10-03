@@ -173,7 +173,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                             dateString, weatherDescription, high, low);
 
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, detailString);
+                            .putExtra(DetailActivity.DATE_KEY, cursor.getString(COL_WEATHER_DATE));
                     startActivity(intent);
                 }
             }
