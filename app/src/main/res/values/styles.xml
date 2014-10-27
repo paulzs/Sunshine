@@ -6,8 +6,7 @@
     </style>
 
     <!-- ActionBar style -->
-    <style name="ActionBar.Solid.Sunshine"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="ActionBar.Solid.Sunshine" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@color/sunshine_blue</item>
     </style>
 
@@ -23,6 +22,7 @@
         <item name="logo">@drawable/ic_logo</item>
     </style>
 
+    <!-- Style for forecast listview -->
     <style name="ForecastListStyle">
         <!-- Here it's a stub.  In screens of sufficient width, this style includes modifications
         for two-pane layout -->
