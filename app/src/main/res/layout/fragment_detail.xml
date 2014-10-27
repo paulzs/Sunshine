@@ -78,7 +78,7 @@
                     android:textColor="@color/grey_700"/>
             </LinearLayout>
         </LinearLayout>
-        
+
         <!-- Humidity, wind, pressure -->
         <LinearLayout
             android:layout_height="match_parent"
