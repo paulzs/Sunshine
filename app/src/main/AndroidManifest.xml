@@ -47,8 +47,10 @@
                 android:value="com.example.android.sunshine.app.MainActivity" />
         </activity>
         <provider
-            android:authorities="com.example.android.sunshine.app"
-            android:name=".data.WeatherProvider" />
+            android:authorities="@string/content_authority"
+            android:name=".data.WeatherProvider"
+            android:exported="false"
+            android:syncable="true"/>
 
         <service android:name=".service.SunshineService"/>
         <receiver android:name=".service.SunshineService$AlarmReceiver" android:enabled="true"/>

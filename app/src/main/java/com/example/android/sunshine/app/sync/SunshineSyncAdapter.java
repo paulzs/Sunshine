@@ -8,9 +8,11 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -36,6 +38,10 @@ import java.util.Vector;
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
 
+    // Interval at which to sync with the weather, in milliseconds.
+    // 60 seconds (1 minute) * 180 = 3 hours
+    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     public SunshineSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -234,7 +240,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 cVVector.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
             }
-            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
+
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -297,6 +303,25 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
+     * Helper method to schedule the sync adapter periodic execution
+     */
+    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+        Account account = getSyncAccount(context);
+        String authority = context.getString(R.string.content_authority);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // we can enable inexact timers in our periodic sync
+            SyncRequest request = new SyncRequest.Builder().
+                    syncPeriodic(syncInterval, flexTime).
+                    setSyncAdapter(account, authority).build();
+            ContentResolver.requestSync(request);
+        } else {
+            ContentResolver.addPeriodicSync(account,
+                    authority, new Bundle(), syncInterval);
+        }
+    }
+
+
+    /**
      * Helper method to have the sync adapter sync immediately
      * @param context The context used to access the account service
      */
@@ -345,6 +370,27 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
         }
         return newAccount;
+    }
+
+    private static void onAccountCreated(Account newAccount, Context context) {
+        /*
+         * Since we've created an account
+         */
+        SunshineSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+
+        /*
+         * Without calling setSyncAutomatically, our periodic sync will not be enabled.
+         */
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+
+        /*
+         * Finally, let's do a sync to get things started
+         */
+        syncImmediately(context);
+    }
+
+    public static void initializeSyncAdapter(Context context) {
+        getSyncAccount(context);
     }
 
 }
