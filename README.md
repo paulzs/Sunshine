@@ -2,13 +2,13 @@
 ==============================================
 
 ### Overview
-An android weather App using the Open Weather Map API
+An Android weather app made using the Open Weather Map API with help from Udacity
 
 ### Features
-Display weather information in either metric or imperial units. Get weather for specific locations based on zip code or manual city entry.
+Display weather information in either metric or imperial units. Get weather for specific locations based on zip code or manual city entry. Display detailed weather information by clicking on any day in the 14 day forecast
 
 ### Installation
-Pick up the .apk and throw it on your android device
+Import the project folder into Android Studio or Eclipse
 
 ### Errors and Testing
 Work in Progress.
