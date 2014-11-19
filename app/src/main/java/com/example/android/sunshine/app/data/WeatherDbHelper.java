@@ -10,6 +10,7 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
  *
  * Created by paulshi on 9/18/14.
  */
+
 public class WeatherDbHelper extends SQLiteOpenHelper{
 
     private static final int DATABASE_VERSION = 1;
@@ -21,6 +22,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         // Create a tale to hold locations.
 
         final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + "(" +
@@ -52,11 +54,13 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
                 WeatherEntry.COLUMN_DEGREES + " REAL NOT NULL, " +
 
                 // Set up the location column as a foreign key to location table.
+
                 " FOREIGN KEY (" + WeatherEntry.COLUMN_LOC_KEY + ") REFERENCES " +
                 LocationEntry.TABLE_NAME + " (" + LocationEntry._ID + "), " +
 
                 // To assure the application have just one weather entry per day
                 // per location, it's created a UNIQUE constraint with REPLACE strategy
+
                 " UNIQUE (" + WeatherEntry.COLUMN_DATETEXT + ", " +
                 WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
 

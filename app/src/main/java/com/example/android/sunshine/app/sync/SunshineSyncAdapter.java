@@ -49,6 +49,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Interval at which to sync with the weather, in milliseconds.
     // 60 seconds (1 minute) * 180 = 3 hours
+
     public static final int SYNC_INTERVAL = 60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
@@ -62,7 +63,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             WeatherEntry.COLUMN_SHORT_DESC
     };
 
-    // these indices must match the projection
+    // These indices must match the projection
+
     private static final int INDEX_WEATHER_ID = 0;
     private static final int INDEX_MAX_TEMP = 1;
     private static final int INDEX_MIN_TEMP = 2;
@@ -75,15 +77,19 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "Starting sync");
+
         // Getting the zipcode to send to the API
+
         String locationQuery = Utility.getPreferredLocation(getContext());
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
+
         String forecastJsonStr = null;
 
         String format = "json";
@@ -91,9 +97,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         int numDays = 14;
 
         try {
+
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
+
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
             final String QUERY_PARAM = "q";
@@ -111,11 +119,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             URL url = new URL(builtUri.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
+
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream into a String
+
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
@@ -126,9 +136,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
                 buffer.append(line + "\n");
             }
 
@@ -155,24 +162,22 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
-        // Now we have a String representing the complete forecast in JSON Format.
-        // Fortunately parsing is easy:  constructor takes the JSON string and converts it
-        // into an Object hierarchy for us.
-
         // These are the names of the JSON objects that need to be extracted.
 
         // Location information
+
         final String OWM_CITY = "city";
         final String OWM_CITY_NAME = "name";
         final String OWM_COORD = "coord";
 
         // Location coordinate
+
         final String OWM_LATITUDE = "lat";
         final String OWM_LONGITUDE = "lon";
 
         // Weather information.  Each day's forecast info is an element of the "list" array.
-        final String OWM_LIST = "list";
 
+        final String OWM_LIST = "list";
         final String OWM_DATETIME = "dt";
         final String OWM_PRESSURE = "pressure";
         final String OWM_HUMIDITY = "humidity";
@@ -180,10 +185,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         final String OWM_WIND_DIRECTION = "deg";
 
         // All temperatures are children of the "temp" object.
+
         final String OWM_TEMPERATURE = "temp";
         final String OWM_MAX = "max";
         final String OWM_MIN = "min";
-
         final String OWM_WEATHER = "weather";
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
@@ -202,9 +207,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             long locationId = addLocation(locationQuery, cityName, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
+
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
 
             for(int i = 0; i < weatherArray.length(); i++) {
+
                 // These are the values that will be collected.
 
                 long dateTime;
@@ -220,11 +227,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 int weatherId;
 
                 // Get the JSON object representing the day
+
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
-                // The date/time is returned as a long.  We need to convert that
-                // into something human-readable, since most people won't read "1400356800" as
-                // "this saturday".
+                // The date/time is returned as a long. Make it human readable
+
                 dateTime = dayForecast.getLong(OWM_DATETIME);
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
@@ -234,13 +241,12 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // Description is in a child array called "weather", which is 1 element long.
                 // That element also contains a weather code.
+
                 JSONObject weatherObject =
                         dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
                 description = weatherObject.getString(OWM_DESCRIPTION);
                 weatherId = weatherObject.getInt(OWM_WEATHER_ID);
 
-                // Temperatures are in a child object called "temp".  Try not to name variables
-                // "temp" when working with temperature.  It confuses everybody.
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
                 high = temperatureObject.getDouble(OWM_MAX);
                 low = temperatureObject.getDouble(OWM_MIN);
@@ -282,12 +288,15 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         // This will only happen if there was an error getting or parsing the forecast.
+
         return;
     }
 
     private void notifyWeather() {
         Context context = getContext();
-        //checking the last update and notify if it' the first of the day
+
+        //Checking the last update and notify if it's the first of the day
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
         boolean displayNotifications = prefs.getBoolean(displayNotificationsKey,
@@ -299,12 +308,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             long lastSync = prefs.getLong(lastNotificationKey, 0);
 
             if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
+
                 // Last sync was more than 1 day ago, let's send a notification with the weather.
+
                 String locationQuery = Utility.getPreferredLocation(context);
 
                 Uri weatherUri = WeatherEntry.buildWeatherLocationWithDate(locationQuery, WeatherContract.getDbDateString(new Date()));
 
-                // we'll query our contentProvider, as always
                 Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);
 
                 if (cursor.moveToFirst()) {
@@ -317,27 +327,25 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                     String title = context.getString(R.string.app_name);
 
                     // Define the text of the forecast.
+
                     String contentText = String.format(context.getString(R.string.format_notification),
                             desc,
                             Utility.formatTemperature(context, high),
                             Utility.formatTemperature(context, low));
 
-                    // NotificationCompatBuilder is a very convenient way to build backward-compatible
-                    // notifications.  Just throw in some data.
+                    // NotificationCompatBuilder to build backwards compatibility
+
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(getContext())
                                     .setSmallIcon(iconId)
                                     .setContentTitle(title)
                                     .setContentText(contentText);
 
-                    // Make something interesting happen when the user clicks on the notification.
-                    // In this case, opening the app is sufficient.
                     Intent resultIntent = new Intent(context, MainActivity.class);
 
                     // The stack builder object will contain an artificial back stack for the
                     // started Activity.
-                    // This ensures that navigating backward from the Activity leads out of
-                    // your application to the Home screen.
+
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
                     stackBuilder.addNextIntent(resultIntent);
                     PendingIntent resultPendingIntent =
@@ -354,6 +362,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
                     //refreshing last sync
+
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong(lastNotificationKey, System.currentTimeMillis());
                     editor.commit();

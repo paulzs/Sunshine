@@ -11,6 +11,6 @@
     <item android:state_activated="true"
         android:drawable="@color/sunshine_light_blue" />
 
-    <!-- Default, "just hangin' out" state. -->
+    <!-- Default state. -->
     <item android:drawable="@android:color/transparent" />
 </selector>

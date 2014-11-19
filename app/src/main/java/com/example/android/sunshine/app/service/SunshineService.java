@@ -29,6 +29,7 @@ import java.util.Vector;
 
 
 public class SunshineService extends IntentService {
+
     private ArrayAdapter<String> mForecastAdapter;
     private Context mContext;
     public static final String LOCATION_QUERY_EXTRA = "lqe";
@@ -43,10 +44,12 @@ public class SunshineService extends IntentService {
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
+
         String forecastJsonStr = null;
 
         String format = "json";
@@ -57,6 +60,7 @@ public class SunshineService extends IntentService {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
+
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
             final String QUERY_PARAM = "q";
@@ -74,11 +78,13 @@ public class SunshineService extends IntentService {
             URL url = new URL(builtUri.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
+
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream into a String
+
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
@@ -119,22 +125,19 @@ public class SunshineService extends IntentService {
             }
         }
 
-        // Now we have a String representing the complete forecast in JSON Format.
-        // Fortunately parsing is easy:  constructor takes the JSON string and converts it
-        // into an Object hierarchy for us.
-
-        // These are the names of the JSON objects that need to be extracted.
-
         // Location information
+
         final String OWM_CITY = "city";
         final String OWM_CITY_NAME = "name";
         final String OWM_COORD = "coord";
 
         // Location coordinate
+
         final String OWM_LATITUDE = "lat";
         final String OWM_LONGITUDE = "lon";
 
         // Weather information.  Each day's forecast info is an element of the "list" array.
+
         final String OWM_LIST = "list";
 
         final String OWM_DATETIME = "dt";
@@ -144,6 +147,7 @@ public class SunshineService extends IntentService {
         final String OWM_WIND_DIRECTION = "deg";
 
         // All temperatures are children of the "temp" object.
+
         final String OWM_TEMPERATURE = "temp";
         final String OWM_MAX = "max";
         final String OWM_MIN = "min";
@@ -166,9 +170,11 @@ public class SunshineService extends IntentService {
             long locationId = addLocation(locationQuery, cityName, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
+
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
 
             for(int i = 0; i < weatherArray.length(); i++) {
+
                 // These are the values that will be collected.
 
                 long dateTime;
@@ -184,11 +190,11 @@ public class SunshineService extends IntentService {
                 int weatherId;
 
                 // Get the JSON object representing the day
+
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
-                // The date/time is returned as a long.  We need to convert that
-                // into something human-readable, since most people won't read "1400356800" as
-                // "this saturday".
+                // The date/time is returned as a long.  Make it human readable
+
                 dateTime = dayForecast.getLong(OWM_DATETIME);
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
@@ -198,13 +204,12 @@ public class SunshineService extends IntentService {
 
                 // Description is in a child array called "weather", which is 1 element long.
                 // That element also contains a weather code.
+
                 JSONObject weatherObject =
                         dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
                 description = weatherObject.getString(OWM_DESCRIPTION);
                 weatherId = weatherObject.getInt(OWM_WEATHER_ID);
 
-                // Temperatures are in a child object called "temp".  Try not to name variables
-                // "temp" when working with temperature.  It confuses everybody.
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
                 high = temperatureObject.getDouble(OWM_MAX);
                 low = temperatureObject.getDouble(OWM_MIN);
@@ -257,6 +262,7 @@ public class SunshineService extends IntentService {
         Log.v(LOG_TAG, "inserting " + cityName + ", with coord: " + lat + ", " + lon);
 
         // First, check if the location with this city name exists in the db
+
         Cursor locationCursor = this.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[]{WeatherContract.LocationEntry._ID},
@@ -268,31 +274,35 @@ public class SunshineService extends IntentService {
             int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
             locationId = locationCursor.getLong(locationIdIndex);
         } else {
-            // Now that the content provider is set up, inserting rows of data is pretty simple.
-            // First create a ContentValues object to hold the data you want to insert.
+
+            // Create a ContentValues object to hold the data you want to insert.
+
             ContentValues locationValues = new ContentValues();
 
             // Then add the data, along with the corresponding name of the data type,
             // so the content provider knows what kind of value is being inserted.
+
             locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
             // Finally, insert location data into the database.
+
             Uri insertedUri = this.getContentResolver().insert(
                     WeatherContract.LocationEntry.CONTENT_URI,
                     locationValues
             );
 
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
+
             locationId = ContentUris.parseId(insertedUri);
         }
 
-        // Always close our cursor
+        // Close cursor
+
         if ( null != locationCursor ) locationCursor.close();
 
-        // Wait, that worked?  Yes!
         return locationId;
     }
 

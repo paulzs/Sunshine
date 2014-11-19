@@ -25,6 +25,7 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
 /**
  * Created by paulshi on 10/8/14.
  */
+
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     public static final String DATE_KEY = "forecast_date";
     private static final String LOCATION_KEY = "location";
@@ -49,8 +50,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             WeatherEntry.COLUMN_WIND_SPEED,
             WeatherEntry.COLUMN_DEGREES,
             WeatherEntry.COLUMN_WEATHER_ID,
-            // This works because the WeatherProvider returns location data joined with
-            // weather data, even though they're stored in two different tables.
             WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING
     };
 
@@ -115,16 +114,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu
+
         inflater.inflate(R.menu.detailfragment, menu);
 
         // Retrieve the share menu item
+
         MenuItem menuItem = menu.findItem(R.id.action_share);
 
         // Get the provider and hold onto it to set/change the share intent.
+
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+
         if (mForecast != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());
         }
@@ -155,6 +158,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 
         // Sort order:  Ascending, by date.
+
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATETEXT + " ASC";
 
         mLocation = Utility.getPreferredLocation(getActivity());
@@ -164,6 +168,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
+
         return new CursorLoader(
                 getActivity(),
                 weatherForLocationUri,
@@ -177,12 +182,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
+
             // Read weather condition ID from cursor
+
             int weatherId = data.getInt(data.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID));
+
             // Use weather art image
+
             mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
+
             String date = data.getString(data.getColumnIndex(WeatherEntry.COLUMN_DATETEXT));
             String friendlyDateText = Utility.getDayName(getActivity(), date);
             String dateText = Utility.getFormattedMonthDay(getActivity(), date);
@@ -190,14 +200,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mDateView.setText(dateText);
 
             // Read description from cursor and update view
+
             String description = data.getString(data.getColumnIndex(
                     WeatherEntry.COLUMN_SHORT_DESC));
             mDescriptionView.setText(description);
 
             // For accessibility, add a content description to the icon field
+
             mIconView.setContentDescription(description);
 
             // Read high temperature from cursor and update view
+
             boolean isMetric = Utility.isMetric(getActivity());
 
             double high = data.getDouble(data.getColumnIndex(WeatherEntry.COLUMN_MAX_TEMP));
@@ -205,27 +218,33 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mHighTempView.setText(highString);
 
             // Read low temperature from cursor and update view
+
             double low = data.getDouble(data.getColumnIndex(WeatherEntry.COLUMN_MIN_TEMP));
             String lowString = Utility.formatTemperature(getActivity(), low);
             mLowTempView.setText(lowString);
 
             // Read humidity from cursor and update view
+
             float humidity = data.getFloat(data.getColumnIndex(WeatherEntry.COLUMN_HUMIDITY));
             mHumidityView.setText(getActivity().getString(R.string.format_humidity, humidity));
 
             // Read wind speed and direction from cursor and update view
+
             float windSpeedStr = data.getFloat(data.getColumnIndex(WeatherEntry.COLUMN_WIND_SPEED));
             float windDirStr = data.getFloat(data.getColumnIndex(WeatherEntry.COLUMN_DEGREES));
             mWindView.setText(Utility.getFormattedWind(getActivity(), windSpeedStr, windDirStr));
 
             // Read pressure from cursor and update view
+
             float pressure = data.getFloat(data.getColumnIndex(WeatherEntry.COLUMN_PRESSURE));
             mPressureView.setText(getActivity().getString(R.string.format_pressure, pressure));
 
             // We still need this for the share intent
+
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+
             if (mShareActionProvider != null) {
                 mShareActionProvider.setShareIntent(createShareForecastIntent());
             }

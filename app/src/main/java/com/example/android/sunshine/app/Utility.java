@@ -46,7 +46,7 @@ public class Utility {
 
     /**
      * Helper method to convert the database representation of the date into something to display
-     * to users.  As classy and polished a user experience as "20140102" is, we can do better.
+     * to users.
      *
      * @param context Context to use for resource localization
      * @param dateStr The db formatted date string, expected to be of the form specified
@@ -54,6 +54,7 @@ public class Utility {
      * @return a user-friendly representation of the date.
      */
     public static String getFriendlyDayString(Context context, String dateStr) {
+
         // The day string for forecast uses the following logic:
         // For today: "Today, June 8"
         // For tomorrow:  "Tomorrow"
@@ -66,6 +67,7 @@ public class Utility {
 
         // If the date we're building the String for is today's date, the format
         // is "Today, June 24"
+
         if (todayStr.equals(dateStr)) {
             String today = context.getString(R.string.today);
             return context.getString(
@@ -98,13 +100,16 @@ public class Utility {
      *                in Utility.DATE_FORMAT
      * @return
      */
+
     public static String getDayName(Context context, String dateStr) {
         SimpleDateFormat dbDateFormat = new SimpleDateFormat(Utility.DATE_FORMAT);
         try {
             Date inputDate = dbDateFormat.parse(dateStr);
             Date todayDate = new Date();
+
             // If the date is today, return the localized version of "Today" instead of the actual
             // day name.
+
             if (WeatherContract.getDbDateString(todayDate).equals(dateStr)) {
                 return context.getString(R.string.today);
             } else {
@@ -124,7 +129,7 @@ public class Utility {
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            // It couldn't process the date correctly.
+            // Couldn't process the date correctly.
             return "";
         }
     }
@@ -136,6 +141,7 @@ public class Utility {
      *                in Utility.DATE_FORMAT
      * @return The day in the form of a string formatted "December 6"
      */
+
     public static String getFormattedMonthDay(Context context, String dateStr) {
         SimpleDateFormat dbDateFormat = new SimpleDateFormat(Utility.DATE_FORMAT);
         try {
@@ -153,6 +159,7 @@ public class Utility {
      * Returns true if metric unit should be used, or false if
      * imperial units should be used.
      */
+
     public static boolean isMetric(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_units_key),
@@ -198,9 +205,12 @@ public class Utility {
      * @param weatherId from OpenWeatherMap API response
      * @return resource id for the corresponding icon. -1 if no relation is found.
      */
+
     public static int getIconResourceForWeatherCondition(int weatherId) {
+
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
+
         if (weatherId >= 200 && weatherId <= 232) {
             return R.drawable.ic_storm;
         } else if (weatherId >= 300 && weatherId <= 321) {
@@ -233,9 +243,12 @@ public class Utility {
      * @param weatherId from OpenWeatherMap API response
      * @return resource id for the corresponding image. -1 if no relation is found.
      */
+
     public static int getArtResourceForWeatherCondition(int weatherId) {
+
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
+
         if (weatherId >= 200 && weatherId <= 232) {
             return R.drawable.art_storm;
         } else if (weatherId >= 300 && weatherId <= 321) {

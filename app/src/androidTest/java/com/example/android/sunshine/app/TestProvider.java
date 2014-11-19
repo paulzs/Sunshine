@@ -18,6 +18,7 @@ import java.util.Set;
 /**
  * Created by paulshi on 9/18/14.
  */
+
 public class TestProvider extends AndroidTestCase{
 
     public static final String LOG_TAG = TestProvider.class.getSimpleName();
@@ -57,11 +58,7 @@ public class TestProvider extends AndroidTestCase{
         return weatherValues;
     }
 
-    /*public void testDeleteDb() throws Throwable {
-        mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
-    }*/
-
-    // brings our database to an empty state
+    // brings database to an empty state
     public void deleteAllRecords() {
         mContext.getContentResolver().delete(
                 WeatherEntry.CONTENT_URI,
@@ -97,11 +94,13 @@ public class TestProvider extends AndroidTestCase{
 
     // Since we want each test to start with a clean slate, run deleteAllRecords
     // in setUp (called by the test runner before each test).
+
     public void setUp() {
         deleteAllRecords();
     }
 
     public void testInsertReadProvider() {
+
         //Test data
 
         ContentValues values = createNorthPoleLocationValues();
@@ -121,8 +120,11 @@ public class TestProvider extends AndroidTestCase{
 
         // Add the location values in with the weather data so that we can make
         // sure that the join worked and we actually get all the values back
+
         addAllContentValues(weatherValues, values);
+
         // Get the joined Weather and Location data
+
         Cursor weatherCursor = mContext.getContentResolver().query(
                 WeatherEntry.buildWeatherLocation(TEST_LOCATION),
                 null, // leaving "columns" null just returns all the columns.
@@ -134,6 +136,7 @@ public class TestProvider extends AndroidTestCase{
         weatherCursor.close();
 
         // Get the joined Weather and Location data with a start date
+
         weatherCursor = mContext.getContentResolver().query(
                 WeatherEntry.buildWeatherLocationWithStartDate(
                         TEST_LOCATION, TEST_DATE),
