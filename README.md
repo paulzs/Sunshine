@@ -14,7 +14,7 @@ Display weather information in either metric or imperial units. Get weather for 
 ![](https://raw.githubusercontent.com/paulzs/Sunshine/master/Sunshine3.png)
 
 ### Installation
-Import the project folder into Android Studio or Eclipse
+Import the project folder into Android Studio or Eclipse and run on a connected device
 
 ### Errors and Testing
 Work in Progress.
